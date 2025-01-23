@@ -288,28 +288,42 @@
 // https://github.com/rust-lang/rust
 // cb2a656cdfb6400ac0200c661267f91fabf237e2 src/libstd/path.rs
 
+#![no_std]
 #![allow(clippy::manual_let_else)]
 #![deny(missing_docs)]
 
+extern crate alloc;
+#[cfg(feature = "std")]
+extern crate std;
+
+#[cfg(feature = "std")]
 mod path_ext;
 
 #[cfg(test)]
 mod tests;
 
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::string::String;
+
+#[cfg(feature = "std")]
 pub use path_ext::{PathExt, RelativeToError};
 
-use std::borrow::{Borrow, Cow};
-use std::cmp;
+use alloc::borrow::Cow;
+use alloc::rc::Rc;
+use alloc::sync::Arc;
+use core::borrow::Borrow;
+use core::cmp;
+use core::fmt;
+use core::hash::{Hash, Hasher};
+use core::iter::FromIterator;
+use core::mem;
+use core::ops;
+use core::str;
+#[cfg(feature = "std")]
 use std::error;
-use std::fmt;
-use std::hash::{Hash, Hasher};
-use std::iter::FromIterator;
-use std::mem;
-use std::ops;
+#[cfg(feature = "std")]
 use std::path;
-use std::rc::Rc;
-use std::str;
-use std::sync::Arc;
 
 const STEM_SEP: char = '.';
 const CURRENT_STR: &str = ".";
@@ -634,6 +648,7 @@ impl fmt::Display for FromPathError {
     }
 }
 
+#[cfg(feature = "std")]
 impl error::Error for FromPathError {}
 
 /// An owned, mutable relative path.
@@ -683,6 +698,7 @@ impl RelativePathBuf {
     ///
     /// [`Prefix`]: std::path::Component::Prefix
     /// [`RootDir`]: std::path::Component::RootDir
+    #[cfg(feature = "std")]
     pub fn from_path<P: AsRef<path::Path>>(path: P) -> Result<RelativePathBuf, FromPathError> {
         use std::path::Component::{CurDir, Normal, ParentDir, Prefix, RootDir};
 
@@ -1056,6 +1072,7 @@ impl RelativePath {
     ///     assert_eq!(FromPathErrorKind::NonRelative, e.kind());
     /// }
     /// ```
+    #[cfg(feature = "std")]
     pub fn from_path<P: ?Sized + AsRef<path::Path>>(
         path: &P,
     ) -> Result<&RelativePath, FromPathError> {
@@ -1233,6 +1250,7 @@ impl RelativePath {
     ///
     /// [`PathBuf`]: std::path::PathBuf
     /// [`PathBuf::push`]: std::path::PathBuf::push
+    #[cfg(feature = "std")]
     pub fn to_path<P: AsRef<path::Path>>(&self, base: P) -> path::PathBuf {
         let mut p = base.as_ref().to_path_buf().into_os_string();
 
@@ -1324,6 +1342,7 @@ impl RelativePath {
     ///
     /// [`PathBuf`]: std::path::PathBuf
     /// [`PathBuf::push`]: std::path::PathBuf::push
+    #[cfg(feature = "std")]
     pub fn to_logical_path<P: AsRef<path::Path>>(&self, base: P) -> path::PathBuf {
         use self::Component::{CurDir, Normal, ParentDir};
 

@@ -2,9 +2,12 @@
 
 use super::*;
 
+use alloc::rc::Rc;
+use alloc::sync::Arc;
+use alloc::{format, string::ToString};
+use alloc::{vec, vec::Vec};
+#[cfg(feature = "std")]
 use std::path::Path;
-use std::rc::Rc;
-use std::sync::Arc;
 
 macro_rules! t(
     ($path:expr, iter: $iter:expr) => (
@@ -399,7 +402,7 @@ pub fn test_set_extension() {
 
 #[test]
 fn test_eq_recievers() {
-    use std::borrow::Cow;
+    use alloc::borrow::Cow;
 
     let borrowed: &RelativePath = RelativePath::new("foo/bar");
     let mut owned: RelativePathBuf = RelativePathBuf::new();
@@ -422,6 +425,7 @@ fn test_eq_recievers() {
     t!(borrowed, owned, borrowed_cow, owned_cow);
 }
 
+#[cfg(feature = "std")]
 #[test]
 #[allow(clippy::cognitive_complexity)]
 pub fn test_compare() {
@@ -545,6 +549,7 @@ fn test_components_iterator() {
     );
 }
 
+#[cfg(feature = "std")]
 #[test]
 fn test_to_path_buf() {
     let path = rp("/hello///world//");
@@ -716,6 +721,7 @@ pub fn test_pop() {
     tp!("foo//bar", "foo", true);
 }
 
+#[cfg(feature = "std")]
 #[test]
 pub fn test_display() {
     // NB: display delegated to the underlying string.
@@ -726,6 +732,7 @@ pub fn test_display() {
     assert_eq!(format!("{}", RelativePath::new("foo/bar")), "foo/bar");
 }
 
+#[cfg(feature = "std")]
 #[cfg(unix)]
 #[test]
 pub fn test_unix_from_path() {
@@ -760,6 +767,7 @@ pub fn test_windows_from_path() {
     );
 }
 
+#[cfg(feature = "std")]
 #[cfg(unix)]
 #[test]
 pub fn test_unix_owned_from_path() {
@@ -780,6 +788,7 @@ pub fn test_unix_owned_from_path() {
     );
 }
 
+#[cfg(feature = "std")]
 #[cfg(windows)]
 #[test]
 pub fn test_windows_owned_from_path() {

@@ -14,10 +14,13 @@ keywords = ["path"]
 categories = ["filesystem"]
 
 [features]
-default = []
+default = ["std"]
+std = ["serde/std"]
 
 [dependencies]
-serde = { version = "1.0.160", optional = true }
+serde = { version = "1.0.160", features = [
+  "alloc",
+], default-features = false, optional = true }
 
 [dev-dependencies]
 anyhow = "1.0.76"
